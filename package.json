@@ -1,0 +1,16 @@
+{
+  "name": "chat-example",
+  "version": "0.0.0",
+  "description": "A chat example to showcase how to use `socket.io` with a static `express` server with `async` for control flow.",
+  "main": "app.js",
+  "repository": "",
+  "author": "Aidan Calverley <aidan.calverley@gmail.com>",
+  "dependencies": {
+    "async": "^0.2.10",
+    "express": "~3.2.4",
+    "mongoose": "^5.0.1",
+    "node-binance-api": "^0.3.6",
+    "node-bittrex-api": "^0.8.2",
+    "socket.io": "~0.9.14"
+  }
+}
