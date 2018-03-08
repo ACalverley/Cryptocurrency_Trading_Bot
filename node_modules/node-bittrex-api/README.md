@@ -131,7 +131,7 @@ getmarkethistory({market : 'USDT-BTC'}, function(data, error) {});
 ```
 you'll get the reversed order:
 ```javascript
-getmarkethistory({market : 'USDT-BTC'}, function(error, data) {});
+getmarkethistory({market : 'USDT-BTC'}, function(data, error) {});
 ```
 
 
@@ -502,7 +502,7 @@ Bittrex it is possible these methods will change or become invalid without notic
 ```javascript
 bittrex.getcandles({
   marketName: 'USDT-BTC',
-  tickInterval: 'fiveMin', // intervals are keywords
+  tickInterval: 'fiveMin', // intervals are keywords:  'oneMin', 'fiveMin', 'thirtyMin', 'hour', 'day'
 }, function( data, err ) {
   console.log( data );
 });
