@@ -1,6 +1,5 @@
-module.exports = async function(timePeriod, log) {
-    var mongoose = require('mongoose');
-    mongoose.connect('mongodb://localhost:27017/rsi_db');
+module.exports = async function(mongoose, timePeriod, log) {
+    console.log("starting rsi test with time period: " + timePeriod);
     var api = require('./api.js');
 
     rsi_low = 30;
@@ -31,10 +30,10 @@ module.exports = async function(timePeriod, log) {
     var currAvgGain, currAvgLoss;
     var RSI = mongoose.model("RSI_" + timePeriod + "_" + rsi_high + "_" + rsi_low, rsiSchema);
 
-    
-    
+
     ///////////////////////////////////   Start   ////////////////////////////////////////////////////
     
+
     startRSI();
     
     function startRSI() {
@@ -56,7 +55,7 @@ module.exports = async function(timePeriod, log) {
             difference = ethPrice/lastPositionEthPrice;
             log(getDateTime() + " " + timePeriod + " " + lastPosition + " " + lastPositionEthPrice + " " + ethPrice + " " + difference);
             lastPositionEthPrice = ethPrice;
-            
+
             console.log("Bought ETH @ ", ethPrice)
         }
 
@@ -72,6 +71,7 @@ module.exports = async function(timePeriod, log) {
     }
 
     async function addRSI() {
+        console.log("getting RSI for time period: " + timePeriod);
         ethPrice = await getETHprice();
         var change, gain, loss, rs, rsi;
 
@@ -252,9 +252,9 @@ module.exports = async function(timePeriod, log) {
 
     function getETHprice() {
         return new Promise((res, rej) => {
-            api.binance.prices((ticker) => {
+            api.binance.prices((error, ticker) => {
                 res(ticker.ETHBTC);
-            })
+            });
         });
     }
 
