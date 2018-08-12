@@ -1,6 +1,6 @@
-module.exports = function(timePeriod, callback) {
+module.exports = async function(timePeriod, callback) {
     var mongoose = require('mongoose');
-    mongoose.connect('mongodb://localhost/rsi_db');
+    mongoose.connect('mongodb://localhost:27017/rsi_db');
     var api = require('./api.js');
 
     var rsiSchema = new mongoose.Schema({
@@ -17,6 +17,10 @@ module.exports = function(timePeriod, callback) {
     });
 
     var entryNum = 0;
+    var entryCountSinceLastPosition = 0;
+    var lastPosition = 'SELL';
+    var lastPositionEthPrice = await getETHprice();
+    var ethPrice = 0;
     var sumGains = 0,
         sumLoss = 0;
     var currAvgGain, currAvgLoss;
@@ -25,25 +29,54 @@ module.exports = function(timePeriod, callback) {
     
     ///////////////////////////////////   Start   ////////////////////////////////////////////////////
     
-    startRSI(callback);
+    startRSI();
     
-    function startRSI(callback) {
+    function startRSI() {
         clearDatabase();
-        runRSI(callback);
+        runRSI();
     }
 
-    async function runRSI(callback) {
+    async function runRSI() {
         var rsi_value = await addRSI();
-        console.log("rsi value", rsi_value);
-        console.log(getDateTime());
-        console.log('waiting');
+        // console.log("rsi value", rsi_value);
+        // console.log(getDateTime());
+        // console.log('waiting');
         await wait(timePeriod);
-        callback(rsi_value);
-        runRSI(callback);
+        // callback(rsi_value)
+        recordOutput(rsi_value);
+        runRSI();
+    }
+
+    function recordOutput(rsi) {
+        if (lastPosition == 'SELL' && entryNum >= 30 && rsi < 25 && entryCountSinceLastPosition >= 3) {
+            lastPosition = 'BUY';
+            entryCountSinceLastPosition = 0;
+            difference = ethPrice/lastPositionEthPrice;
+            callback('BUY: @' + getDateTime() + 
+                '\n    Last Price: ' + lastPositionEthPrice + 
+                '\n    Current Price: ' + ethPrice + 
+                '\n    % Difference: ' + difference - 1 + '\n\n');
+            lastPositionEthPrice = ethPrice;
+
+            console.log("Bought ETH @ ", ethPrice)
+        }
+
+        else if (lastPosition == 'BUY' && entryNum >= 35 && rsi > 75 && entryCountSinceLastPosition >= 3) {
+            lastPosition = 'SELL';
+            entryCountSinceLastPosition = 0;
+            difference = ethPrice/lastPositionEthPrice;
+            callback('SELL: @' + getDateTime() + 
+                '\n    Last Position Etherium Price: ' + lastPositionEthPrice + 
+                '\n    Current Etherium Price: ' + ethPrice + 
+                '\n    % Difference: ' + difference - 1 + '\n\n');
+            lastPositionEthPrice = ethPrice;
+
+            console.log("Sold ETH @ ", ethPrice)
+        }
     }
 
     async function addRSI() {
-        var ethPrice = await getETHprice();
+        ethPrice = await getETHprice();
         var change, gain, loss, rs, rsi;
 
         if (entryNum == 0) {
@@ -62,8 +95,9 @@ module.exports = function(timePeriod, callback) {
             }, (err, entry) => {
                 if (err) console.log("error occured");
                 else {
-                    console.log("entry saved: ", entry);
+                    // console.log("entry saved: ", entry);
                     ++entryNum;
+                    ++entryCountSinceLastPosition;
                 }
             });
         }
@@ -101,8 +135,9 @@ module.exports = function(timePeriod, callback) {
             }, (err, entry) => {
                 if (err) console.log("error occured");
                 else {
-                    console.log("entry saved: ", entry);
+                    // console.log("entry saved: ", entry);
                     ++entryNum;
+                    ++entryCountSinceLastPosition;
                 }
             });
         }
@@ -147,9 +182,10 @@ module.exports = function(timePeriod, callback) {
             }, (err, entry) => {
                 if (err) console.log("error occured");
                 else {
-                    console.log("entry saved: ", entry);
+                    // console.log("entry saved: ", entry);
                     ++entryNum;
-                    console.log("returning from addRSI");
+                    ++entryCountSinceLastPosition;
+                    // console.log("returning from addRSI");
                 }
             });
         }
@@ -192,25 +228,26 @@ module.exports = function(timePeriod, callback) {
             }, (err, entry) => {
                 if (err) console.log("error occured");
                 else {
-                    console.log("entry saved: ", entry);
+                    // console.log("entry saved: ", entry);
                     ++entryNum;
-                    console.log("returning from addRSI");
+                    ++entryCountSinceLastPosition;
+                    // console.log("returning from addRSI");
                 }
             });
         }
         
-        console.log("inside addRSI: ",rsi);
+        // console.log("inside addRSI: ",rsi);
         return rsi;
     }
 
     function getChange(ethPrice) {
         return new Promise((res, rej) => {
             var lastEntry = entryNum - 1;
-            console.log("searching for entry: ", lastEntry);
+            // console.log("searching for entry: ", lastEntry);
             RSI.find({ entry: lastEntry }, (err, result) => {
                 if (err) console.log("error retrieving last entry");
                 else {
-                    console.log("last price: ", result[0].price);
+                    // console.log("last price: ", result[0].price);
                     res(ethPrice - result[0].price);
                 }
             });
