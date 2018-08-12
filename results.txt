@@ -1,0 +1,1 @@
+Start_Time undefinedDate Time_Period Action Last_Eth_Price Current_Eth_Price %_Difference

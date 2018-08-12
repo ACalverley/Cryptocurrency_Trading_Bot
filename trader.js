@@ -12,8 +12,8 @@ var writeOutput = (trade) => {
 	stream.write(trade);
 }
 
-writeOutput('Start_Time ' + rsi.getDateTime);
-writeOutput('Date Time_Period Action Last_Eth_Price Current_Eth_Price %_Difference');
+writeOutput('Start_Time ' + rsi.getDateTime + '\n');
+writeOutput('Date Time_Period Action Last_Eth_Price Current_Eth_Price %_Difference' + '\n');
 
 // for (var time_period = 3; time_period < 15; time_period += 2){
 stream.once('open', () => {

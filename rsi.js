@@ -53,7 +53,7 @@ module.exports = async function(mongoose, timePeriod, log) {
             lastPosition = 'BUY';
             entryCountSinceLastPosition = 0;
             difference = ethPrice/lastPositionEthPrice;
-            log(getDateTime() + " " + timePeriod + " " + lastPosition + " " + lastPositionEthPrice + " " + ethPrice + " " + difference);
+            log(getDateTime() + " " + timePeriod + " " + lastPosition + " " + lastPositionEthPrice + " " + ethPrice + " " + difference + '\n');
             lastPositionEthPrice = ethPrice;
 
             console.log("Bought ETH @ ", ethPrice)
@@ -63,7 +63,7 @@ module.exports = async function(mongoose, timePeriod, log) {
             lastPosition = 'SELL';
             entryCountSinceLastPosition = 0;
             difference = ethPrice/lastPositionEthPrice;
-            log(getDateTime() + " " + timePeriod + " " + lastPosition + " " + lastPositionEthPrice + " " + ethPrice + " " + difference);
+            log(getDateTime() + " " + timePeriod + " " + lastPosition + " " + lastPositionEthPrice + " " + ethPrice + " " + difference + '\n');
             lastPositionEthPrice = ethPrice;
 
             console.log("Sold ETH @ ", ethPrice)
