@@ -2,10 +2,10 @@ const binance = require('node-binance-api');
 const bittrex = require('node-bittrex-api');
 
 binance.options({
-    'APIKEY':'',
-    'APISECRET':''
+    'APIKEY': process.env.BINANCE_KEY,
+    'APISECRET': process.env.BINANCE_SECRET
 });
-
+ 
 bittrex.options({
     'apikey' : '',
     'apisecret' : ''
