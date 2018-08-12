@@ -1,9 +1,19 @@
-var api = require('./api.js');
 var rsi = require('./rsi.js');
+var fs = require('fs')
 
-var printRSI = (rsi) => console.log("most recent RSI: ", rsi);
+var stream = fs.createWriteStream("results.txt")
 
-rsi(5, printRSI);
+var writeOutput = (trade) => {
+	stream.write(trade)
+	// console.log("Most Recent RSI: ", rsi);
+}
+
+stream.once('open', () => {
+	rsi(5, writeOutput);
+});
+
+
+// rsi(5, writeRSI);
 
 // rsi(60);
 // rsi(120);
