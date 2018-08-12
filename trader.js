@@ -4,20 +4,14 @@ var fs = require('fs')
 var stream = fs.createWriteStream("results.txt")
 
 var writeOutput = (trade) => {
-	stream.write(trade)
-	// console.log("Most Recent RSI: ", rsi);
+	stream.write(trade);
 }
 
-stream.once('open', () => {
-	rsi(5, writeOutput);
-});
+writeOutput('Start_Time ' + getDateTime());
+writeOutput('Date Time_Period Action Last_Eth_Price Current_Eth_Price %_Difference');
 
-
-// rsi(5, writeRSI);
-
-// rsi(60);
-// rsi(120);
-
-// rsi(10);
-
-
+for (var time_period = 1; time_period < 30; time_period++){
+	stream.once('open', () => {
+		rsi(time_period, writeOutput);
+	});
+}

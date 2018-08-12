@@ -1,7 +1,12 @@
-module.exports = async function(timePeriod, callback) {
+module.exports = async function(timePeriod, log) {
     var mongoose = require('mongoose');
     mongoose.connect('mongodb://localhost:27017/rsi_db');
     var api = require('./api.js');
+
+    rsi_low = 30;
+    rsi_high = 70;
+    price_start = 0;
+    price_end = 0;
 
     var rsiSchema = new mongoose.Schema({
         entry: Number,
@@ -24,7 +29,8 @@ module.exports = async function(timePeriod, callback) {
     var sumGains = 0,
         sumLoss = 0;
     var currAvgGain, currAvgLoss;
-    var RSI = mongoose.model("RSI_" + timePeriod, rsiSchema);
+    var RSI = mongoose.model("RSI_" + timePeriod + "_" + rsi_high + "_" + rsi_low, rsiSchema);
+
     
     
     ///////////////////////////////////   Start   ////////////////////////////////////////////////////
@@ -38,37 +44,27 @@ module.exports = async function(timePeriod, callback) {
 
     async function runRSI() {
         var rsi_value = await addRSI();
-        // console.log("rsi value", rsi_value);
-        // console.log(getDateTime());
-        // console.log('waiting');
         await wait(timePeriod);
-        // callback(rsi_value)
         recordOutput(rsi_value);
         runRSI();
     }
 
     function recordOutput(rsi) {
-        if (lastPosition == 'SELL' && entryNum >= 30 && rsi < 25 && entryCountSinceLastPosition >= 3) {
+        if (lastPosition == 'SELL' && entryNum >= 28 && rsi < rsi_low && entryCountSinceLastPosition >= 3) {
             lastPosition = 'BUY';
             entryCountSinceLastPosition = 0;
             difference = ethPrice/lastPositionEthPrice;
-            callback('BUY: @' + getDateTime() + 
-                '\n    Last Price: ' + lastPositionEthPrice + 
-                '\n    Current Price: ' + ethPrice + 
-                '\n    % Difference: ' + difference - 1 + '\n\n');
+            log(getDateTime() + " " + timePeriod + " " + lastPosition + " " + lastPositionEthPrice + " " + ethPrice + " " + difference);
             lastPositionEthPrice = ethPrice;
-
+            
             console.log("Bought ETH @ ", ethPrice)
         }
 
-        else if (lastPosition == 'BUY' && entryNum >= 35 && rsi > 75 && entryCountSinceLastPosition >= 3) {
+        else if (lastPosition == 'BUY' && entryNum >= 28 && rsi > rsi_high && entryCountSinceLastPosition >= 3) {
             lastPosition = 'SELL';
             entryCountSinceLastPosition = 0;
             difference = ethPrice/lastPositionEthPrice;
-            callback('SELL: @' + getDateTime() + 
-                '\n    Last Position Etherium Price: ' + lastPositionEthPrice + 
-                '\n    Current Etherium Price: ' + ethPrice + 
-                '\n    % Difference: ' + difference - 1 + '\n\n');
+            log(getDateTime() + " " + timePeriod + " " + lastPosition + " " + lastPositionEthPrice + " " + ethPrice + " " + difference);
             lastPositionEthPrice = ethPrice;
 
             console.log("Sold ETH @ ", ethPrice)
