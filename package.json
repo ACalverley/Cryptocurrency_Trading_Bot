@@ -1,16 +1,16 @@
 {
-  "name": "Cryptocurrency_Trading_Bot",
-  "version": "0.0.0",
-  "description": "Predict future price movements using multidimensional LSTM neural network that incorporates historical data and public sentiment gathered using web scrapping",
-  "main": "app.js",
-  "repository": "https://github.com/ACalverley/Cryptocurrency_Trading_Bot",
+  "name": "crypto_trader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "trader.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "author": "Aidan Calverley <aidan.calverley@gmail.com>",
+  "license": "ISC",
   "dependencies": {
-    "async": "^0.2.10",
-    "express": "~3.2.4",
+    "dotenv": "^6.0.0",
     "mongoose": "^5.2.7",
-    "node-binance-api": "^0.3.9",
-    "node-bittrex-api": "^0.8.3",
-    "socket.io": "~0.9.14"
+    "node-binance-api": "^0.8.1"
   }
 }
